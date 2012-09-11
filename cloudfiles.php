@@ -1967,7 +1967,18 @@ class CF_Object
     function _guess_content_type($handle) {
         if ($this->content_type)
             return;
-            
+
+        $ext = end(explode('.', $filename));
+        switch($ext)
+        {
+            case 'jpg': $this->content_type = "image/jpeg"; break;
+            case 'gif': $this->content_type = "image/gif"; break;
+            case 'png': $this->content_type = "image/png"; break;
+            case 'woff': $this->content_type = "application/font-woff"; break;
+            case 'tff': $this->content_type = "application/x-font-ttf"; break;
+        }
+
+
         if (function_exists("finfo_open")) {
             $local_magic = dirname(__FILE__) . "/share/magic";
             $finfo = @finfo_open(FILEINFO_MIME, $local_magic);
@@ -2003,7 +2014,13 @@ class CF_Object
         }
 
         if (!$this->content_type) {
-            throw new BadContentTypeException("Required Content-Type not set");
+            if (strripos($handle, 'wOFF') >= 0 ) {
+                $this->content_type = "application/font-woff";
+            }else {
+                throw new BadContentTypeException("Required Content-Type not set");
+            }
+
+
         }
         return True;
     }
